@@ -1,3 +1,14 @@
+#Function to calculate average grade
+def average_in_dict(dict):
+    sum_num = 0
+    qty = 0
+    for course in dict:
+        sum_num += sum(dict[course])
+        qty += len(dict[course])
+    if qty > 0:
+        return float((sum_num/qty))
+
+
 class Student:
     def __init__(self, name, surname, gender):
         self.name = name
@@ -8,15 +19,7 @@ class Student:
         self.grades = {}
 
     def __str__(self):
-
-        sum_num = 0
-        qty = 0
-
-        for course in self.grades:
-            sum_num += sum(self.grades[course])
-            qty += len(self.grades[course])
-
-        return f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за домашние задания: {sum_num/qty:0.1f}\nКурсы в процессе изучения: {", ".join(self.courses_in_progress)}\nЗавершенные курсы: {", ".join(self.finished_courses)}'
+        return f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за домашние задания: {average_in_dict(self.grades):0.1f}\nКурсы в процессе изучения: {", ".join(self.courses_in_progress)}\nЗавершенные курсы: {", ".join(self.finished_courses)}'
 
     def rate_teach(self, teacher, course, grade):
         if isinstance(teacher, Lecturer) and course in self.courses_in_progress and course in teacher.courses_attached:
@@ -28,23 +31,8 @@ class Student:
             return 'Ошибка'
 
     def __lt__(self, other):
-        sum_a = 0
-        sum_b = 0
-        qty_a = 0
-        qty_b = 0
-
-        for course in self.grades:
-            sum_a += sum(self.grades[course])
-            qty_a += len(self.grades[course])
-
         if isinstance(other, Student):
-            for course in other.grades:
-                sum_b += sum(other.grades[course])
-                qty_b += len(other.grades[course])
-
-        print(f'{sum_a / qty_a:0.1f} vs. {sum_b / qty_b:0.1f}')
-
-        return (sum_a / qty_a) < (sum_b / qty_b)
+            return (average_in_dict(self.grades)) < (average_in_dict(other.grades))
 
 
 class Mentor:
@@ -62,6 +50,7 @@ class Mentor:
         else:
             return 'Ошибка'
 
+
 class Lecturer(Mentor):
 
     def __init__(self, name, surname):
@@ -72,33 +61,13 @@ class Lecturer(Mentor):
         print('Лекторы не могут выставлять оценки студентам')
 
     def __str__(self):
-
-        sum_num = 0
-        qty = 0
-        for course in self.grades:
-            sum_num += sum(self.grades[course])
-            qty += len(self.grades[course])
-
-        return f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за лекции: {sum_num/qty:0.1f}'
+        return f'''Имя: {self.name}
+Фамилия: {self.surname}
+Средняя оценка за лекции: {average_in_dict(self.grades)}'''
 
     def __lt__(self, other):
-        sum_a = 0
-        sum_b = 0
-        qty_a = 0
-        qty_b = 0
-
-        for course in self.grades:
-            sum_a += sum(self.grades[course])
-            qty_a += len(self.grades[course])
-
         if isinstance(other, Lecturer):
-            for course in other.grades:
-                sum_b += sum(other.grades[course])
-                qty_b += len(other.grades[course])
-
-        print(f'{sum_a/qty_a:0.1f} vs. {sum_b/qty_b:0.1f}')
-
-        return (sum_a/qty_a) < (sum_b/qty_b)
+            return (average_in_dict(self.grades)) < (average_in_dict(other.grades))
 
 
 class Reviewer(Mentor):
@@ -106,34 +75,70 @@ class Reviewer(Mentor):
         return f'Имя: {self.name}\nФамилия: {self.surname}'
 
 
-best_student = Student('Ruoy', 'Eman', 'your_gender')
-best_student.courses_in_progress += ['Python']
 
-worst_student = Student('Neymar','Kolobok','transgenfer')
-worst_student.courses_in_progress += ['Python']
-#
-cool_mentor = Reviewer('Some', 'Buddy')
-cool_mentor.courses_attached += ['Python']
-#
-cool_lect = Lecturer('Boby','Dylan')
-cool_lect.courses_attached += ['Python']
+#Creating 2 examples of each class
+student1 = Student('Andrew', 'Garfield', 'male')
+student2 = Student('Jenifer', 'Lawrence', 'female')
 
-uncool_lect = Lecturer('Joey', 'Kasapkin')
-uncool_lect.courses_attached += ['Python']
+#Adding data to created students
+student1.courses_in_progress = ['Pyhton']
+student1.courses_in_progress += ['Javascript']
 
-cool_mentor.rate_hw(best_student, 'Python', 10)
-cool_mentor.rate_hw(best_student, 'Python', 5)
-cool_mentor.rate_hw(best_student, 'Python', 10)
+student2.courses_in_progress = ['Python']
+student2.courses_in_progress += ['Django']
 
-cool_mentor.rate_hw(worst_student, 'Python', 7)
-cool_mentor.rate_hw(worst_student, 'Python', 10)
+student1.finished_courses = ['Web design']
+student1.finished_courses += ['Introduction to Frontend Development']
 
-best_student.rate_teach(cool_lect, 'Python', 8)
-best_student.rate_teach(cool_lect, 'Python', 9)
+student2.finished_courses = ['PHP']
+student2.finished_courses += ['SQL Databases']
 
-best_student.rate_teach(uncool_lect, 'Python', 9)
+#Creating 2 examples of Lecturers and Reviewers
+lecturer1 = Lecturer('Bill', 'Gates')
+lecturer2 = Lecturer('Steve', 'Jobs')
 
-print(best_student < worst_student)
-# print(best_student)
-# print(cool_mentor)
-# print(cool_lect)
+reviewer1 = Reviewer('Alexandr', 'Bardin')
+reviewer2 = Reviewer('Yelena', 'Nikitina')
+
+#Adding data to created mentors
+lecturer1.courses_attached = ['Pyhton']
+lecturer1.courses_attached += ['Operating Systems']
+
+lecturer2.courses_attached = ['Python']
+lecturer2.courses_attached += ['Business Management']
+
+#Grading students
+reviewer1.rate_hw(student1,'Python',7)
+reviewer1.rate_hw(student1,'Python',10)
+
+reviewer2.rate_hw(student1,'Python',8)
+reviewer2.rate_hw(student1,'Python',5)
+
+reviewer1.rate_hw(student2,'Python',10)
+reviewer1.rate_hw(student2,'Python',10)
+
+reviewer2.rate_hw(student2,'Python',10)
+reviewer2.rate_hw(student2,'Python',9)
+
+print(student1.grades)
+print(student2.grades)
+#Grading lecturers
+student1.rate_teach(lecturer1, 'Python', 10)
+student1.rate_teach(lecturer1, 'Python', 7)
+
+student2.rate_teach(lecturer1, 'Python', 8)
+student2.rate_teach(lecturer1, 'Python', 1)
+
+student1.rate_teach(lecturer2,'Python',9)
+student1.rate_teach(lecturer2,'Python',3)
+
+student2.rate_teach(lecturer2,'Python',5)
+student2.rate_teach(lecturer2,'Python',7)
+
+#Printing results of all methods
+
+print('-'*20)
+print(lecturer1)
+print(lecturer1.grades)
+
+
